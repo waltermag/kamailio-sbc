@@ -28,6 +28,8 @@
     project_src: "{{ asterisk_deploy_path }}"
     remove_volumes: yes
     state: absent
+  when: "'remove_asterisk' in ansible_run_tags or 'tear_down' in ansible_run_tags"
   tags:
     - never
     - remove_asterisk
+    - tear_down
