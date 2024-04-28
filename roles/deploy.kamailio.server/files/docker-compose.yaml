@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  kamailio:
+    image: ghcr.io/kamailio/kamailio:5.8.1-bookworm
+    ports:
+      - "7060:5060/udp"
+    volumes:
+      - ./kamailio:/etc/kamailio
+    environment:
+      - DBENGINE=MYSQL
+      - DBHOST=db
+      - DBNAME=kamailio
+      - DBRWUSER=kamailio
+      - DBRWPW=kamailiorw
+      - DBROOTUSER=root
+      - DBROOTPW=rootpw
+      - DBUSER=kamailio
+      - DBPW=kamailiopw
+    depends_on:
+      - db
+  db:
+    image: mariadb:latest
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_DATABASE=kamailio
+      - MYSQL_USER=kamailio
+      - MYSQL_PASSWORD=kamailiopw
