@@ -1,0 +1,7 @@
+---
+- name: restart asterisk
+  community.docker.docker_compose:
+    project_src: "{{ asterisk_deploy_path }}"
+    services:
+      - asterisk-1
+    restarted: yes
