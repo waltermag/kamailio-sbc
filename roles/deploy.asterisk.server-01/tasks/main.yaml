@@ -1,0 +1,33 @@
+---
+- name: create asterisk-1 config folder
+  file:
+    path: "{{ asterisk_deploy_path }}"
+    state: directory
+
+- name: copy docker-compose.yaml
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ asterisk_deploy_path }}/docker-compose.yaml"
+
+- name: copy asterisk config files
+  synchronize:
+    src: asterisk
+    dest: "{{ asterisk_deploy_path }}"
+    archive: no
+    delete: yes
+    recursive: yes
+  notify: restart asterisk
+
+- name: start asterisk
+  community.docker.docker_compose:
+    project_src: "{{ asterisk_deploy_path }}"
+    build: yes
+
+- name: stop and remove asterisk
+  docker_compose:
+    project_src: "{{ asterisk_deploy_path }}"
+    remove_volumes: yes
+    state: absent
+  tags:
+    - never
+    - remove-asterisk

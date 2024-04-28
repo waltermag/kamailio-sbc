@@ -1,0 +1,7 @@
+---
+- name: Kamailio-SBC Poc Deployment
+  hosts: all
+  roles:
+   - install.docker
+   - deploy.asterisk.server-01
+   - deploy.asterisk.server-02
