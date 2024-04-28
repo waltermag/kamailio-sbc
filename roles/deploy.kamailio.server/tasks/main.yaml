@@ -1,0 +1,33 @@
+---
+- name: create kamailio config folder
+  file:
+    path: "{{ kamailio_deploy_path }}"
+    state: directory
+
+- name: copy docker-compose.yaml
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ kamailio_deploy_path }}/docker-compose.yaml"
+
+- name: copy kamailio config files
+  synchronize:
+    src: kamailio
+    dest: "{{ kamailio_deploy_path }}"
+    archive: no
+    delete: yes
+    recursive: yes
+  notify: restart kamailio
+
+- name: start kamailio
+  community.docker.docker_compose:
+    project_src: "{{ kamailio_deploy_path }}"
+    build: yes
+
+- name: stop and remove kamailio
+  docker_compose:
+    project_src: "{{ kamailio_deploy_path }}"
+    remove_volumes: yes
+    state: absent
+  tags:
+    - never
+    - remove-kamailio

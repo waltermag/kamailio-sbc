@@ -1,0 +1,7 @@
+---
+- name: restart kamailio
+  community.docker.docker_compose:
+    project_src: "{{ kamailio_deploy_path }}"
+    services:
+      - kamailio
+    restarted: yes

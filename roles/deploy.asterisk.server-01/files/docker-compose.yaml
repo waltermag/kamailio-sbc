@@ -3,7 +3,6 @@ version: '3'
 services:
   asterisk-1:
     image: mlan/asterisk
-    # network_mode: bridge
     ports:
       - "8080:80"
       - "5060:5060/udp"
