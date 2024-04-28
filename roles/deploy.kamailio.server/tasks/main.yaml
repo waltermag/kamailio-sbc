@@ -30,4 +30,4 @@
     state: absent
   tags:
     - never
-    - remove-kamailio
+    - remove_kamailio
