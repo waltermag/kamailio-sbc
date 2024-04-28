@@ -5,3 +5,4 @@
    - install.docker
    - deploy.asterisk.server-01
    - deploy.asterisk.server-02
+   - deploy.kamailio.server
