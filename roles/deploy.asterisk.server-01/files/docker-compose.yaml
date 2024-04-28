@@ -2,7 +2,7 @@ version: '3'
 
 services:
   asterisk-1:
-    image: mlan/asterisk
+    image: mlan/asterisk:full-1.1.8
     ports:
       - "8080:80"
       - "5060:5060/udp"
