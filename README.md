@@ -1,19 +1,29 @@
-**Project Overview:**
-This project serves as a lab environment for testing the proof of concept of using Kamailio as a Session Border Controller (SBC) to connect Microsoft Teams to other IP PBX systems. The deployment is managed via Ansible.
+## Project: Microsoft Teams to IP PBX Interconnection Lab
 
-**Deployment Method:**
-All deployments are containerized using Docker.
+This project provides a lab environment to test the concept of using Kamailio, a Session Border Controller (SBC), to connect Microsoft Teams with other IP PBX systems. The deployment is automated using Ansible.
 
-**Ansible Compatibility:**
-The Ansible playbook was prepared for Ubuntu 20.04.6 LTS.
+**Project Overview**
 
-**Docker Images Used:**
-- Kamailio Image: `ghcr.io/kamailio/kamailio:5.8.1-bookworm` from the project [kamailio-docker](https://github.com/kamailio/kamailio-docker).
-- Asterisk Image: `mlan/asterisk:full-1.1.8` from the project [docker-asterisk](https://github.com/mlan/docker-asterisk).
+This lab simulates a scenario where Microsoft Teams needs to connect with other IP PBX systems. Kamailio acts as the SBC, facilitating communication between them. Ansible playbooks automate the deployment process using Docker containers.
 
-**Deployment Commands:**
+**Features:**
+
+* Connects Microsoft Teams to other IP PBX systems
+* Automated deployment using Ansible
+* Containerized environment with Docker
+
+**Deployment**
+
+All deployments are containerized using Docker images for Kamailio and Asterisk. Ansible playbooks manage the deployment process. The playbooks are designed for Ubuntu 20.04.6 LTS.
+
+**Using the Lab**
+
+The provided Ansible commands allow you to easily deploy, manage, and tear down the lab environment.
+
+**Running the Lab Environment**
+
 ```bash
-# Deploy the complete lab
+# Deploy the entire Lab
 ansible-playbook lab.yaml
 
 # Deploy only Asterisk
@@ -32,8 +42,15 @@ ansible-playbook lab.yaml --tags remove_asterisk
 ansible-playbook lab.yaml --tags remove_kamailio
 ```
 
-**Configuration Update:**
-The configurations for both Asterisk and Kamailio can be updated inside the roles under the files directory. After updating configurations, rerun the playbook.
+**Configuration Update**
 
-**Development Status:**
-This project is still under development and has not been fully tested yet. Errors are expected and will be fixed in subsequent iterations
+You can update configurations for both Asterisk and Kamailio within the "files" directory inside their respective roles in the Ansible project structure. After making changes, rerun the playbook using `ansible-playbook lab.yaml` to apply the updates.
+
+**Development Status**
+
+This project is under development and might have bugs. We expect to fix them in future iterations.
+
+**Additional Notes**
+
+* For more information on Kamailio, refer to the kamailio-docker: [https://github.com/kamailio/kamailio-docker](https://github.com/kamailio/kamailio-docker) project.
+* The Asterisk image used is from the docker-asterisk: [https://github.com/mlan/docker-asterisk](https://github.com/mlan/docker-asterisk) project.
