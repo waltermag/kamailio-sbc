@@ -1,6 +1,3 @@
-Sure, here's the README updated with bash commands:
-
-```markdown
 **Project README**
 
 1. **Project Overview:**
@@ -43,5 +40,3 @@ Sure, here's the README updated with bash commands:
 7. **Development Status:**
    This project is still under development and has not been fully tested yet. Errors are expected and will be fixed in subsequent iterations.
 ```
-
-These bash commands provide a clear and concise way to execute the deployment and management tasks outlined in the README.
