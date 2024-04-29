@@ -1,6 +1,6 @@
 ## Project: Microsoft Teams to IP PBX Interconnection Lab
 
-This project provides a lab environment to test the concept of using Kamailio, a Session Border Controller (SBC), to connect Microsoft Teams with other IP PBX systems. The deployment is automated using Ansible.
+This project provides a lab environment to test the concept of using Kamailio, as Session Border Controller (SBC), to connect Microsoft Teams with other IP PBX systems. The deployment is automated using Ansible.
 
 **Project Overview**
 
@@ -10,7 +10,6 @@ This lab simulates a scenario where Microsoft Teams needs to connect with other 
 
 * Connects Microsoft Teams to other IP PBX systems
 * Automated deployment using Ansible
-* Containerized environment with Docker
 
 **Deployment**
 
@@ -48,7 +47,7 @@ You can update configurations for both Asterisk and Kamailio within the "files" 
 
 **Development Status**
 
-This project is under development and might have bugs. We expect to fix them in future iterations.
+This project is under development and might have errors which will be fixed in future iterations.
 
 **Additional Notes**
 
