@@ -1,33 +1,45 @@
 ---
-- name: create asterisk-2 config folder
+- name: Create asterisk1 config folder
   file:
     path: "{{ asterisk_deploy_path }}"
     state: directory
 
-- name: copy docker-compose.yaml
-  copy:
-    src: docker-compose.yaml
-    dest: "{{ asterisk_deploy_path }}/docker-compose.yaml"
+- name: Create the Asterisk Server-2
+  docker_container:
+    name: asterisk2
+    image: mlan/asterisk:full-1.1.8
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "9080:80"
+      - "6060:5060/udp"
+      - "6060:5060"
+      - "6061:5061"
+      - "20000-20099:10000-10099/udp"
+    env:
+      SYSLOG_LEVEL: "4"
+      HOSTNAME: "test2.docker.localhost"
+      PULSE_SERVER: "unix:/run/pulse/socket"
+      PULSE_COOKIE: "/run/pulse/cookie"
+      WEBSMSD_PORT: "80"
+    volumes:
+      - "/home/sip/asterisk2/asterisk:/usr/share/asterisk/config:ro"
+      - "/home/sip/asterisk2/pulse:/run/pulse:rshared"
+      - "/etc/localtime:/etc/localtime:ro"
 
-- name: copy asterisk config files
+- name: Copy asterisk config files
   synchronize:
     src: asterisk
     dest: "{{ asterisk_deploy_path }}"
     archive: no
     delete: yes
     recursive: yes
-  notify: restart asterisk
+  notify: Restart Asterisk-2
 
-- name: start asterisk
-  community.docker.docker_compose:
-    project_src: "{{ asterisk_deploy_path }}"
-    build: yes
-
-- name: stop and remove asterisk
-  docker_compose:
-    project_src: "{{ asterisk_deploy_path }}"
-    remove_volumes: yes
-    state: absent
+- name: Stop Asterisk container
+  docker_container:
+    name: asterisk2
+    state: stopped
   when: "'remove_asterisk' in ansible_run_tags or 'tear_down' in ansible_run_tags"
   tags:
     - never

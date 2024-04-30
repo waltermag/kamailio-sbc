@@ -1,1 +1,1 @@
-asterisk_deploy_path: "/home/{{ ansible_user }}/asterisk-2"
+asterisk_deploy_path: "/home/{{ ansible_user }}/asterisk2"
