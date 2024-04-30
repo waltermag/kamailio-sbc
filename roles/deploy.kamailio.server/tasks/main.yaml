@@ -50,11 +50,10 @@
     recursive: yes
   notify: Restart kamailio
 
-- name: stop and remove kamailio
-  docker_compose:
-    project_src: "{{ kamailio_deploy_path }}"
-    remove_volumes: yes
-    state: absent
+- name: Stop Kamailio container
+  docker_container:
+    name: kamailio
+    state: stopped
   when: "'remove_kamailio' in ansible_run_tags or 'tear_down' in ansible_run_tags"
   tags:
     - never
