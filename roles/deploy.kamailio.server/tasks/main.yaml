@@ -52,8 +52,11 @@
 
 - name: Stop Kamailio container
   docker_container:
-    name: kamailio
+    name: "{{ item }}"
     state: stopped
+  loop:
+   - kamailio
+   - kamailio_db
   when: "'remove_kamailio' in ansible_run_tags or 'tear_down' in ansible_run_tags"
   tags:
     - never
