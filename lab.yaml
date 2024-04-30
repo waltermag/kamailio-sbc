@@ -3,6 +3,6 @@
   hosts: all
   roles:
    - { name: install.docker, tags:["deploy_docker"] }
-   - { name: deploy.asterisk.server-01, tags:["deploy_asterisk-1", "deploy_asterisk"] }
-   - { name: deploy.asterisk.server-02, tags:["deploy_asterisk-2", "deploy_asterisk"] }
+   - { name: deploy.asterisk.server-01, tags:["deploy_asterisk1", "deploy_asterisk"] }
+   - { name: deploy.asterisk.server-02, tags:["deploy_asterisk2", "deploy_asterisk"] }
    - { name: deploy.kamailio.server, tags:["deploy_kamailio"] }
