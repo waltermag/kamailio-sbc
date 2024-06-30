@@ -1,0 +1,30 @@
+- hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    dns: voip.donhodzo.com
+    subscribers:
+     - 600
+     - 400
+    shell: /bin/bash
+    asterisk_version: 20-current
+    freepbx_version: 16.0
+    number_of_cpu_cores: 1
+    fail2ban_loglevel: 3
+    fail2ban_logtarget: /var/log/fail2ban.log
+    fail2ban_socket: /var/run/fail2ban/fail2ban.sock
+    fail2ban_ignoreip: 127.0.0.1/8 ::1 4.3.2.1
+    # if you need any of the modules that are not included by default, add these modules here like that: --enable chan_sip --enable res_http_websocket
+    asterisk_enable_modules: --enable app_macro --enable res_ari --enable chan_mobile --enable chan_ooh323 --enable format_mp3 --enable core-sounds-en-wav --enable moh-opsound-wav --enable extra-sounds-en-wav --enable chan_sip --enable res_http_websocket
+  roles:
+    # - role: initial
+    - role: kamailio-install
+    # - role: asterisk-prepare
+    # - role: asterisk-install
+    # - role: asterisk-configure
+    # - role: asterisk-start
+    # - role: fail2ban-install
+    # - role: fail2ban-configure
+    # - role: freepbx-install
+    # - role: install.docker
+    # - role: deploy.freepbx.server-01
