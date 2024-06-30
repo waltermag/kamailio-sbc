@@ -1,5 +1,0 @@
----
-- name: Restart Asterisk-1
-  docker_container:
-    name: asterisk1
-    restart: true

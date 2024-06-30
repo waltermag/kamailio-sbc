@@ -1,5 +1,0 @@
----
-- name: Restart kamailio
-  docker_container:
-    name: kamailio
-    restart: true
