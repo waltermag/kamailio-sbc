@@ -2,7 +2,7 @@
   become: true
   gather_facts: true
   vars:
-    dns: voip.donhodzo.com
+    dns: advanced.acszim.com
     subscribers:
      - 600
      - 400

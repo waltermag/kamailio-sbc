@@ -66,9 +66,9 @@
     dest: /usr/local/etc/kamailio/{{ item }}
   loop:
     - tls.cfg
-    - voip.donhodzo.com-cert.pem
-    - voip.donhodzo.com-key.pem
-    - ca.pem
+    - fullchain.pem
+    - privkey.pem
+    
   tags:
    - deploy-kamailio
 
