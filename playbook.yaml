@@ -1,8 +1,10 @@
 - hosts: all
-  become: true
   gather_facts: true
   vars:
-    dns: advanced.acszim.com
+    dns: voip.donhodzo.com
+    PBX_PORT: 5061
+    PBX_IP: 20.84.108.176
+    HOST_IP: sip3.pstnhub.microsoft.com #52.114.32.169
     subscribers:
      - 600
      - 400
@@ -17,8 +19,8 @@
     # if you need any of the modules that are not included by default, add these modules here like that: --enable chan_sip --enable res_http_websocket
     asterisk_enable_modules: --enable app_macro --enable res_ari --enable chan_mobile --enable chan_ooh323 --enable format_mp3 --enable core-sounds-en-wav --enable moh-opsound-wav --enable extra-sounds-en-wav --enable chan_sip --enable res_http_websocket
   roles:
-    # - role: initial
     - role: kamailio-install
+    # - role: initial
     # - role: asterisk-prepare
     # - role: asterisk-install
     # - role: asterisk-configure
@@ -26,5 +28,5 @@
     # - role: fail2ban-install
     # - role: fail2ban-configure
     # - role: freepbx-install
-    # - role: install.docker
-    # - role: deploy.freepbx.server-01
+
+
