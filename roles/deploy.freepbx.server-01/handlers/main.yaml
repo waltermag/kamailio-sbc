@@ -1,5 +1,0 @@
----
-- name: Restart freepbx-1
-  docker_container:
-    name: freepbx-sever-1
-    restart: true
