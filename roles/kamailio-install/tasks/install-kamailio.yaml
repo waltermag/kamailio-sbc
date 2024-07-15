@@ -1,0 +1,48 @@
+- name: Install required packages
+  apt:
+    name:
+      - make
+      - autoconf
+      - pkg-config
+      - git
+      - gcc
+      - g++
+      - flex
+      - bison
+      - libssl-dev
+      - default-libmysqlclient-dev
+    state: present
+    update_cache: yes
+
+- name: Create directory for Kamailio source
+  file:
+    path: /usr/local/src/kamailio-5.8
+    state: directory
+    mode: '0755'
+
+- name: Clone Kamailio repository
+  git:
+    repo: 'https://github.com/kamailio/kamailio'
+    dest: /usr/local/src/kamailio-5.8/kamailio
+    version: '5.8'
+    depth: 1
+
+- name: Configure Kamailio with MySQL and TLS modules
+  command: make include_modules="db_mysql tls" cfg
+  args:
+    chdir: /usr/local/src/kamailio-5.8/kamailio
+
+- name: Build Kamailio
+  make:
+    chdir: /usr/local/src/kamailio-5.8/kamailio
+    target: all
+
+- name: Install Kamailio
+  make:
+    chdir: /usr/local/src/kamailio-5.8/kamailio
+    target: install
+
+- name: Install Kamailio systemd service for Debian
+  make:
+    chdir: /usr/local/src/kamailio-5.8/kamailio
+    target: install-systemd-debian

@@ -1,0 +1,9 @@
+- name: Install Fail2Ban
+  apt:
+    pkg:
+      - fail2ban
+    state: latest
+    update_cache: true
+  tags:
+    - fail2ban
+    - system
