@@ -1,0 +1,107 @@
+- name: Update package lists
+  apt: update_cache=yes
+
+- name: Install MySQL Server
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Get public IP address
+  shell: dig +short myip.opendns.com @resolver1.opendns.com
+  register: public_ip
+  tags:
+   - deploy-kamailio
+
+- name: Install kamailio
+  include_tasks: install-kamailio.yaml
+
+- name: Install rtpengine
+  apt:
+    name:
+      - rtpengine
+    state: present
+
+- name: Install mysqlclient for Python 3
+  apt:
+    name: python3-mysqldb
+    state: present
+
+- name: Ensure MySQL service is running
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Copy kamailio configs
+  template:
+    src: "{{ item }}"
+    dest: /usr/local/etc/kamailio/{{ item.replace('.j2', '') }}
+  loop:
+    - tls.cfg.j2
+    - kamctlrc.j2
+    - kamailio.cfg.j2
+  tags:
+   - deploy-kamailio
+
+- name: Copy dispatcher config file
+  template:
+    src: dispatcher.list.j2
+    dest: /usr/local/etc/kamailio/dispatcher.list
+  tags:
+   - deploy-kamailio
+
+- name: Copy rtpengine config file
+  template:
+    src: rtpengine.conf.j2
+    dest: /etc/rtpengine/rtpengine.conf
+  tags:
+   - deploy-kamailio
+
+- name: Copy tls config files
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/etc/kamailio/{{ item }}
+  loop:
+    - cert.pem
+    - key.pem
+  tags:
+   - deploy-kamailio
+
+- name: Running kamdbctl create
+  command:
+    cmd: kamdbctl create
+    creates: /var/log/kamailio-db-created
+  tags:
+   - deploy-kamailio
+
+- name: Create kamailio-db-created  flag
+  command: touch /var/log/kamailio-db-created
+  tags:
+   - deploy-kamailio
+
+- name: Add subscribers
+  command: kamctl add {{ item }} {{ item }}
+  args:
+    creates: /var/log/subscribers-added
+  loop: "{{ subscribers }}"
+  tags:
+   - deploy-kamailiot
+
+- name: Create subscribers flag
+  command: touch /var/log/subscribers-added
+  tags:
+   - deploy-kamailio
+
+- name: Restart rtpengine service
+  ansible.builtin.service:
+    name: rtpengine
+    state: restarted
+  tags:
+   - deploy-kamailio
+
+- name: Restart Kamailio service
+  ansible.builtin.service:
+    name: kamailio
+    state: restarted
+  tags:
+   - deploy-kamailio
