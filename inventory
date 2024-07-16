@@ -1,2 +1,1 @@
-[servers]
-localhost
+voip.donhodzo.com ansible_ssh_private_key_file=/voip/keys/kamilio-sbc-lab_key.pem
