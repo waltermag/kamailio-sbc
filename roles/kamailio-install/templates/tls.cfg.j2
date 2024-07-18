@@ -1,0 +1,17 @@
+[server:default]
+method = TLSv1.2+
+verify_certificate = no
+require_certificate = no
+private_key = /usr/local/etc/kamailio/key.pem
+certificate = /usr/local/etc/kamailio/cert.pem
+server_name={{ dns }}
+server_id={{ dns }}
+
+[client:default]
+method = TLSv1.2+
+verify_certificate = no
+require_certificate = no
+private_key = /usr/local/etc/kamailio/key.pem
+certificate = /usr/local/etc/kamailio/cert.pem
+server_name={{ dns }}
+server_id={{ dns }}

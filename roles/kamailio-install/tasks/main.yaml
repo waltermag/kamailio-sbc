@@ -32,43 +32,38 @@
     state: started
     enabled: yes
 
-- name: copy kamailio.cfg config file
+- name: Copy kamailio configs
   template:
-    src: kamailio.cfg.j2
-    dest: /usr/local/etc/kamailio/kamailio.cfg
+    src: "{{ item }}"
+    dest: /usr/local/etc/kamailio/{{ item.replace('.j2', '') }}
+  loop:
+    - tls.cfg.j2
+    - kamctlrc.j2
+    - kamailio.cfg.j2
   tags:
    - deploy-kamailio
 
-- name: copy kamctlrc config file
-  template:
-    src: kamctlrc.j2
-    dest: /usr/local/etc/kamailio/kamctlrc
-  tags:
-   - deploy-kamailio
-
-- name: copy dispatcher config file
+- name: Copy dispatcher config file
   template:
     src: dispatcher.list.j2
     dest: /usr/local/etc/kamailio/dispatcher.list
   tags:
    - deploy-kamailio
 
-- name: copy rtpengine config file
+- name: Copy rtpengine config file
   template:
     src: rtpengine.conf.j2
     dest: /etc/rtpengine/rtpengine.conf
   tags:
    - deploy-kamailio
 
-- name: copy tls config files
+- name: Copy tls config files
   copy:
     src: "{{ item }}"
     dest: /usr/local/etc/kamailio/{{ item }}
   loop:
-    - tls.cfg
-    - fullchain.pem
-    - privkey.pem
-    
+    - cert.pem
+    - key.pem
   tags:
    - deploy-kamailio
 
@@ -76,11 +71,13 @@
   command:
     cmd: kamdbctl create
     creates: /var/log/kamailio-db-created
+  tags:
+   - deploy-kamailio
 
 - name: Create kamailio-db-created  flag
   command: touch /var/log/kamailio-db-created
   tags:
-   - test
+   - deploy-kamailio
 
 - name: Add subscribers
   command: kamctl add {{ item }} {{ item }}
@@ -88,12 +85,12 @@
     creates: /var/log/subscribers-added
   loop: "{{ subscribers }}"
   tags:
-   - test
+   - deploy-kamailiot
 
 - name: Create subscribers flag
   command: touch /var/log/subscribers-added
   tags:
-   - test
+   - deploy-kamailio
 
 - name: Restart rtpengine service
   ansible.builtin.service:

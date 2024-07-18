@@ -3,6 +3,8 @@
 # Kamailio SIP Server v5.8 - default configuration script
 #     - web: https://www.kamailio.org
 #     - git: https://github.com/kamailio/kamailio
+#!define FROM_TEAMS 11
+#!define FROM_PBX 12
 #
 #!define WITH_RTPENGINE
 #!define WITH_DEBUG
@@ -544,6 +546,9 @@ request_route {
 	# per request initial checks
 	route(REQINIT);
 
+	#check who is the sender
+	route(INITCHECK);
+
 	# NAT detection
 	route(NATDETECT);
 
@@ -608,6 +613,64 @@ request_route {
 	route(LOCATION);
 
 	return;
+}
+
+route[INITCHECK] {
+	if(from_uri =~ ".*microsoft.com")
+	{
+		setflag(FROM_TEAMS);
+		$du = "sip:" + "{{ PBX_IP }}" + ":" + "{{ PBX_PORT }}";
+		route(HANDLE_RTP_FROM_TEAMS);
+	}
+
+	if(from_uri =~ ".*" + "{{ PBX_IP }}")
+	{
+		setflag(FROM_PBX);
+		$du="sip:sip.pstnhub.microsoft.com;transport=tls";
+		route(HANDLE_RTP_FROM_PBX);
+	}
+}
+
+#Manage RTP & transcoding comming from Teams to PBX
+route[HANDLE_RTP_FROM_TEAMS] {
+	t_on_reply("PBX_REPLY_TO_TEAMS");
+
+	if (has_body("application/sdp"))
+	{
+		rtpengine_manage("RTP codec-mask=all codec-transcode=PCMA replace-origin replace-session-connection ICE=remove media-address={{ HOST_IP }}");
+		record_route();
+		t_relay_to_udp("{{ PBX_IP }}","{{ PBX_PORT }}");
+	}
+	else
+	{
+		rtpengine_manage();
+	}
+}
+
+#Manage RTP & transcoding comming from PBX to Teams
+route[HANDLE_RTP_FROM_PBX] {
+	t_on_reply("TEAMS_REPLY_TO_PBX");
+
+	if (has_body("application/sdp"))
+	{
+		rtpengine_manage("SRTP codec-mask=all ICE=force codec-transcode=PCMA replace-origin replace-session-connection media-address={{ public_ip.stdout }}");
+
+		$rd = "sip.pstnhub.microsoft.com";
+		$td = "{{ dns }}";
+		$fd = "{{ dns }}";
+
+		record_route();
+
+		#Set TLS SNI (server name & server id)
+		$xavp(tls=>server_name) = "{{ dns }}";
+		$xavp(tls=>server_id) = "{{ dns }}";
+
+		t_relay();
+	}
+	else
+	{
+		rtpengine_manage();
+	}
 }
 
 # Wrapper for relaying requests
@@ -682,6 +745,23 @@ route[REQINIT] {
 route[WITHINDLG] {
 	if (!has_totag()) return;
 
+	#Teams reINVITEs
+	if(isflagset(FROM_TEAMS)) {
+		loose_route();
+		t_relay();
+		exit;
+	}
+
+	if(isflagset(FROM_PBX)) {
+		#Set TLS SNI (server name & server id)
+		$xavp(tls=>server_name) = "{{ dns }}";
+		$xavp(tls=>server_id) = "{{ dns }}";
+
+		loose_route();
+		t_relay();
+		exit;
+	}
+
 	# sequential request within a dialog should
 	# take the path determined by record-routing
 	if (loose_route()) {
@@ -689,6 +769,13 @@ route[WITHINDLG] {
 		if (is_method("BYE")) {
 			setflag(FLT_ACC); # do accounting ...
 			setflag(FLT_ACCFAILED); # ... even if the transaction fails
+
+			#set coresponding cert on transactions
+			if($fd == "{{ dns }}") {
+				$xavp(tls=>server_name) = "{{ dns }}";
+				$xavp(tls=>server_id) = "{{ dns }}";
+			}
+
 		} else if ( is_method("ACK") ) {
 			# ACK is forwarded statelessly
 			route(NATMANAGE);
@@ -1105,4 +1192,31 @@ event_route[tm:local-request] {
         }
         xlog("L_INFO", "Sent out tm request: $mb\n");
 
+}
+
+#PBX On Reply
+onreply_route[PBX_REPLY_TO_TEAMS]
+{
+	if (has_body("application/sdp"))
+	{
+		rtpengine_manage("SRTP codec-mask=all codec-transcode=PCMA replace-origin replace-session-connection media-address={{ public_ip.stdout }}");
+	}
+	else
+	{
+		rtpengine_manage();
+	}
+}
+
+
+#From Teams On Reply
+onreply_route[TEAMS_REPLY_TO_PBX]
+{
+	if (has_body("application/sdp"))
+	{
+		rtpengine_manage("RTP codec-mask=all codec-transcode=PCMA replace-origin replace-session-connection media-address={{ HOST_IP }}");
+	}
+	else
+	{
+		rtpengine_manage();
+	}
 }
